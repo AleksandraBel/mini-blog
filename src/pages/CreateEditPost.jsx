@@ -1,0 +1,128 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { db } from "../firebase";
+import {
+  collection,
+  addDoc,
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { useAuth } from "../context/useAuth";
+
+const CreateEditPost = () => {
+  const { id } = useParams();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(!!id);
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      if (!id) return;
+      try {
+        const docSnap = await getDoc(doc(db, "posts", id));
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setTitle(data.title);
+          setContent(data.content);
+        } else {
+          console.error("Пост не знайдено");
+        }
+      } catch (error) {
+        console.error("Помилка завантаження:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [id]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!title.trim()) newErrors.title = "Заголовок обов'язковий";
+    else if (title.length < 5) newErrors.title = "Мінімум 5 символів";
+
+    if (!content.trim()) newErrors.content = "Текст обов'язковий";
+    else if (content.length < 20) newErrors.content = "Мінімум 20 символів";
+
+    return newErrors;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    const postData = {
+      title,
+      content,
+      author: currentUser.displayName || currentUser.email,
+      updatedAt: serverTimestamp(),
+    };
+
+    try {
+      if (id) {
+        await updateDoc(doc(db, "posts", id), postData);
+      } else {
+        await addDoc(collection(db, "posts"), {
+          ...postData,
+          createdAt: serverTimestamp(),
+          userId: currentUser.uid,
+        });
+      }
+      navigate("/");
+    } catch (error) {
+      console.error("Помилка збереження:", error);
+    }
+  };
+
+  if (loading) return <p>Завантаження...</p>;
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-4">
+      <h2 className="text-2xl font-bold">
+        {id ? "Редагування" : "Нова замітка"}
+      </h2>
+
+      <div>
+        <label className="block font-medium">Заголовок</label>
+        <input
+          type="text"
+          className="w-full border rounded p-2"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        {errors.title && <p className="text-red-600 text-sm">{errors.title}</p>}
+      </div>
+
+      <div>
+        <label className="block font-medium">Текст</label>
+        <textarea
+          className="w-full border rounded p-2"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        {errors.content && (
+          <p className="text-red-600 text-sm">{errors.content}</p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+        {id ? "Зберегти зміни" : "Опублікувати"}
+      </button>
+    </form>
+  );
+};
+
+export default CreateEditPost;
