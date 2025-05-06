@@ -2,8 +2,8 @@ import PostsList from "../components/PostList";
 
 const Home = () => {
   return (
-    <div>
-      <h1 className="text-2x1 font-semibold p-4">Всі пости</h1>
+    <div className="container border border-black bg-white">
+      <h1 className="text-xl font-bold mb-1">Всі пости</h1>
       <PostsList />
     </div>
   );

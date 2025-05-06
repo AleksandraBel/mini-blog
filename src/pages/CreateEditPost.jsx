@@ -105,37 +105,41 @@ const CreateEditPost = () => {
     return <p className="text-red-600 p-4">Доступ заборонено</p>;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-4">
-      <h2 className="text-2xl font-bold">
+    <form onSubmit={handleSubmit} className="container p-8 space-y-6">
+      <h2 className="text-2xl font-semibold mb-6 text-center">
         {id ? "Редагування" : "Нова замітка"}
       </h2>
 
       <div>
-        <label className="block font-medium">Заголовок</label>
+        <label className="block text-lg font-medium text-gray-700">
+          Заголовок
+        </label>
         <input
           type="text"
-          className="w-full border rounded p-2"
+          className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-lg bg-white focus:bg-gray-200 focus:outline-none"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        {errors.title && <p className="text-red-600 text-sm">{errors.title}</p>}
+        {errors.title && (
+          <p className="text-red-600 text-sm mt-1">{errors.title}</p>
+        )}
       </div>
 
       <div>
-        <label className="block font-medium">Текст</label>
+        <label className="block text-lg font-medium text-gray-700">Текст</label>
         <textarea
-          className="w-full border rounded p-2"
+          className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-lg bg-white focus:bg-gray-200 focus:outline-none"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
         {errors.content && (
-          <p className="text-red-600 text-sm">{errors.content}</p>
+          <p className="text-red-600 text-sm mt-1">{errors.content}</p>
         )}
       </div>
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        className="w-full py-3 bg-blue-600 text-white rounded-lg"
       >
         {id ? "Зберегти зміни" : "Опублікувати"}
       </button>

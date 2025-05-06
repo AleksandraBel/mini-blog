@@ -8,13 +8,17 @@ const Header = () => {
   const logout = auth?.logout;
 
   return (
-    <header className="bg-white-800 text-white p-4">
+    <header className="bg-white p-4 border border-black">
       <div className="flex justify-between items-center">
         <nav className="flex gap-4">
-          <Link to="/">🏠 Home</Link>
-          <Link to="/login">🔐 Login</Link>
-          <Link to="/register">📝 Register</Link>
-          <Link to="/create">➕ Create</Link>
+          <Link to="/">MyBlog</Link>
+          {!currentUser && (
+            <>
+              <Link to="/login">Вхід</Link>
+              <Link to="/register">Реєстрація</Link>
+            </>
+          )}
+          {currentUser && <Link to="/create">Створити</Link>}
         </nav>
 
         {currentUser && logout && (
@@ -23,7 +27,7 @@ const Header = () => {
               logout();
               navigate("/login");
             }}
-            className="p-2 bg-red-500 hover:bg-red-600 text-white rounded"
+            className="p-2"
           >
             Вийти
           </button>

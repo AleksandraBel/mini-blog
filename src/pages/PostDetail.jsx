@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 import CommentSection from "../components/CommentSection";
@@ -13,24 +13,25 @@ const PostDetail = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const docRef = doc(db, "posts", id);
-        const docSnap = await getDoc(docRef);
-
+    const docRef = doc(db, "posts", id);
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnap) => {
         if (docSnap.exists()) {
           setPost({ id: docSnap.id, ...docSnap.data() });
         } else {
           console.log("Пост не знайдено");
+          setPost(null);
         }
-      } catch (error) {
+        setLoading(false);
+      },
+      (error) => {
         console.error("Помилка при отриманні поста:", error);
-      } finally {
         setLoading(false);
       }
-    };
+    );
 
-    fetchPost();
+    return () => unsubscribe();
   }, [id]);
 
   if (loading) return <p>Завантаження...</p>;
@@ -67,6 +68,10 @@ const PostDetail = () => {
           : "невідомо"}
       </p>
 
+      <p className="mt-2 text-sm text-gray-500">
+        Коментарів: {post.commentsCount || 0}
+      </p>
+
       {(isAuthor || isAdmin) && (
         <div className="mt-4 space-x-2">
           <Link
@@ -84,7 +89,6 @@ const PostDetail = () => {
         </div>
       )}
 
-      {/* Секція коментарів */}
       <CommentSection postId={post.id} />
     </div>
   );

@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background-color: #f7fafc;
+  color: #2d3748;
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+}
+
+.container {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 800px;
+}

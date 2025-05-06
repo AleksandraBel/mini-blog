@@ -14,33 +14,37 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <Header />
-        <div className="p-4">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<RegisterForm />} />
-            <Route
-              path="/create"
-              element={
-                <PrivateRoute allowedRoles={["admin", "user"]}>
-                  <CreateEditPost />
-                </PrivateRoute>
-              }
-            />
+        <div className="min-h-screen flex justify-center items-center bg-gray-100">
+          <div className="max-w-3xl flex flex-col text-[#1a1a1a] ">
+            <Header />
+            <main className="flex-grow p-4">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<RegisterForm />} />
+                <Route
+                  path="/create"
+                  element={
+                    <PrivateRoute allowedRoles={["admin", "user"]}>
+                      <CreateEditPost />
+                    </PrivateRoute>
+                  }
+                />
 
-            <Route
-              path="/edit/:id"
-              element={
-                <PrivateRoute allowedRoles={["admin", "user"]}>
-                  <CreateEditPost />
-                </PrivateRoute>
-              }
-            />
-            <Route path="/posts/:id" element={<PostDetail />} />
-            <Route path="/unauthorized" element={<Unauthorized />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+                <Route
+                  path="/edit/:id"
+                  element={
+                    <PrivateRoute allowedRoles={["admin", "user"]}>
+                      <CreateEditPost />
+                    </PrivateRoute>
+                  }
+                />
+                <Route path="/posts/:id" element={<PostDetail />} />
+                <Route path="/unauthorized" element={<Unauthorized />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+          </div>
         </div>
       </Router>
     </AuthProvider>

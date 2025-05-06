@@ -30,32 +30,52 @@ const RegisterForm = () => {
 
       navigate("/");
     } catch (err) {
-      setError(err.message);
+      setError("Помилка реєстрації: " + err.message);
       console.error("Registration error:", err.message);
     }
   };
 
   return (
-    <div>
-      <h2>Реєстрація</h2>
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Зареєструватися</button>
+    <div className="p-8 rounded-lg shadow-md w-full max-w-md">
+      <h2 className="text-2xl font-semibold mb-6">Реєстрація</h2>
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+
+      <form onSubmit={handleRegister} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            type="email"
+            placeholder="Введіть email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="mt-1 w-full px-3 py-2 border border-black rounded-md bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">
+            Пароль
+          </label>
+          <input
+            type="password"
+            placeholder="Введіть пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="mt-1 w-full px-3 py-2 border border-black rounded-md bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="h-12 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"
+        >
+          Зареєструватися
+        </button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 };

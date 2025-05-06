@@ -20,7 +20,7 @@ const PostsList = () => {
             id: doc.id,
             ...data,
             createdAt: data.createdAt?.toDate?.() || new Date(),
-            commentsCount: data.commentsCount || 0, // вже в пості
+            commentsCount: data.commentsCount || 0,
           };
         });
 
@@ -43,7 +43,7 @@ const PostsList = () => {
         <Link
           to={`/posts/${post.id}`}
           key={post.id}
-          className="border rounded-lg p-4 shadow hover:bg-gray-50 transition"
+          className="border-b border-black p-4 hover:bg-gray-50 transition"
         >
           <h2 className="text-xl font-bold mb-1">{post.title}</h2>
           <p className="text-sm text-gray-500">

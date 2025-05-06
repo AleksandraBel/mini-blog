@@ -30,29 +30,42 @@ const Login = () => {
   };
 
   return (
-    <div>
-      <h2>Вхід</h2>
-      {error && <p>{error}</p>}
-      <form onSubmit={handleSubmit}>
+    <div className="p-8 rounded-lg shadow-md w-full max-w-md">
+      <h2 className="text-2xl font-semibold mb-6">Вхід</h2>
+      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label>Email</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
           <input
             type="email"
+            placeholder="Введіть email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            className="mt-1 w-full px-3 py-2 border border-black rounded-md bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label>Пароль</label>
+          <label className="block text-sm font-medium text-gray-700">
+            Пароль
+          </label>
           <input
             type="password"
+            placeholder="Введіть пароль"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            className="mt-1 w-full px-3 py-2 border border-black rounded-md bg-white text-gray-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <button type="submit">Вхід</button>
+        <button
+          type="submit"
+          className="h-12 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"
+        >
+          Увійти
+        </button>
       </form>
     </div>
   );
