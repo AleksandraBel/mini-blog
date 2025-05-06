@@ -8,6 +8,7 @@ import CreateEditPost from "./pages/CreateEditPost";
 import NotFound from "./pages/NotFound";
 import PrivateRoute from "./components/PrivateRoute";
 import PostDetail from "./pages/PostDetail";
+import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   return (
@@ -22,20 +23,22 @@ function App() {
             <Route
               path="/create"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={["admin", "user"]}>
                   <CreateEditPost />
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/edit/:id"
               element={
-                <PrivateRoute>
+                <PrivateRoute allowedRoles={["admin", "user"]}>
                   <CreateEditPost />
                 </PrivateRoute>
               }
             />
             <Route path="/posts/:id" element={<PostDetail />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

@@ -19,6 +19,7 @@ const RegisterForm = () => {
         email,
         password
       );
+
       const user = userCredential.user;
 
       await setDoc(doc(db, "users", user.uid), {
