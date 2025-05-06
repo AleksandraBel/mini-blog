@@ -8,7 +8,7 @@ const Header = () => {
   const logout = auth?.logout;
 
   return (
-    <header className="bg-gray-800 text-white p-4">
+    <header className="bg-white-800 text-white p-4">
       <div className="flex justify-between items-center">
         <nav className="flex gap-4">
           <Link to="/">🏠 Home</Link>
