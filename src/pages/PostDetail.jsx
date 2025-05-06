@@ -1,6 +1,6 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 import CommentSection from "../components/CommentSection";
@@ -9,7 +9,8 @@ const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { currentUser } = useAuth();
+  const { currentUser, userData } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -36,6 +37,21 @@ const PostDetail = () => {
   if (!post) return <p>Пост не знайдено.</p>;
 
   const isAuthor = currentUser && currentUser.uid === post.userId;
+  const isAdmin = userData?.role === "admin";
+
+  const handleDelete = async () => {
+    const confirm = window.confirm("Ти впевнена, що хочеш видалити пост?");
+    if (!confirm) return;
+
+    try {
+      await deleteDoc(doc(db, "posts", post.id));
+      alert("Пост видалено");
+      navigate("/");
+    } catch (error) {
+      console.error("Помилка видалення:", error);
+      alert("Помилка при видаленні поста");
+    }
+  };
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
@@ -51,13 +67,21 @@ const PostDetail = () => {
           : "невідомо"}
       </p>
 
-      {isAuthor && (
-        <Link
-          to={`/edit/${post.id}`}
-          className="inline-block bg-yellow-500 text-white px-4 py-2 rounded mt-6"
-        >
-          Редагувати
-        </Link>
+      {(isAuthor || isAdmin) && (
+        <div className="mt-4 space-x-2">
+          <Link
+            to={`/edit/${post.id}`}
+            className="inline-block bg-yellow-500 text-white px-4 py-2 rounded"
+          >
+            Редагувати
+          </Link>
+          <button
+            onClick={handleDelete}
+            className="inline-block bg-red-600 text-white px-4 py-2 rounded"
+          >
+            Видалити
+          </button>
+        </div>
       )}
 
       {/* Секція коментарів */}

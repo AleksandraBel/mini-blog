@@ -14,7 +14,7 @@ import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 
 const CommentSection = ({ postId }) => {
-  const { currentUser } = useAuth();
+  const { currentUser, userData } = useAuth();
   const [commentText, setCommentText] = useState("");
   const [comments, setComments] = useState([]);
   const [editingCommentId, setEditingCommentId] = useState(null);
@@ -37,7 +37,7 @@ const CommentSection = ({ postId }) => {
     return () => unsubscribe();
   }, [postId]);
 
-  const isAdmin = currentUser?.role === "admin";
+  const isAdmin = userData?.role === "admin";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,8 +84,7 @@ const CommentSection = ({ postId }) => {
   };
 
   const canManageComment = (comment) =>
-    currentUser &&
-    (comment.authorId === currentUser.uid || currentUser.role === "admin");
+    currentUser && (comment.authorId === currentUser.uid || isAdmin);
 
   return (
     <div className="mt-10">
@@ -144,11 +143,13 @@ const CommentSection = ({ postId }) => {
                 <p className="text-gray-800">{comment.text}</p>
                 <p className="text-sm text-gray-500">
                   Автор: {comment.authorName} •{" "}
-                  {comment.createdAt?.toDate().toLocaleString()}
+                  {comment.createdAt?.toDate?.()
+                    ? comment.createdAt.toDate().toLocaleString()
+                    : "невідомо"}
                 </p>
                 {canManageComment(comment) && (
                   <div className="flex gap-3 mt-1 text-sm">
-                    {comment.authorId === currentUser.uid && (
+                    {(comment.authorId === currentUser.uid || isAdmin) && (
                       <button
                         onClick={() => handleEdit(comment.id, comment.text)}
                         className="text-blue-500"

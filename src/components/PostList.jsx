@@ -20,7 +20,7 @@ const PostsList = () => {
             id: doc.id,
             ...data,
             createdAt: data.createdAt?.toDate?.() || new Date(),
-            commentsCount: 0, // тимчасово 0, оновимо пізніше
+            commentsCount: data.commentsCount || 0, // вже в пості
           };
         });
 

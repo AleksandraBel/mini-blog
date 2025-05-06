@@ -17,30 +17,46 @@ const CreateEditPost = () => {
   const [content, setContent] = useState("");
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(!!id);
+  const [ownerId, setOwnerId] = useState(null);
+  const [accessDenied, setAccessDenied] = useState(false);
+
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  const { currentUser, userData } = useAuth();
 
   useEffect(() => {
     const fetchPost = async () => {
       if (!id) return;
+
       try {
-        const docSnap = await getDoc(doc(db, "posts", id));
+        const docRef = doc(db, "posts", id);
+        const docSnap = await getDoc(docRef);
+
         if (docSnap.exists()) {
           const data = docSnap.data();
           setTitle(data.title);
           setContent(data.content);
+          setOwnerId(data.userId);
+
+          const isAuthor = currentUser?.uid === data.userId;
+          const isAdmin = userData?.role === "admin";
+
+          if (!isAuthor && !isAdmin) {
+            setAccessDenied(true);
+          }
         } else {
           console.error("Пост не знайдено");
+          setAccessDenied(true);
         }
       } catch (error) {
         console.error("Помилка завантаження:", error);
+        setAccessDenied(true);
       } finally {
         setLoading(false);
       }
     };
 
     fetchPost();
-  }, [id]);
+  }, [id, currentUser, userData]);
 
   const validate = () => {
     const newErrors = {};
@@ -85,6 +101,8 @@ const CreateEditPost = () => {
   };
 
   if (loading) return <p>Завантаження...</p>;
+  if (accessDenied)
+    return <p className="text-red-600 p-4">Доступ заборонено</p>;
 
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-4">
