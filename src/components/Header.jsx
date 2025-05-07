@@ -8,30 +8,31 @@ const Header = () => {
   const logout = auth?.logout;
 
   return (
-    <header className="bg-white p-4 border border-black">
-      <div className="flex justify-between items-center">
-        <nav className="flex gap-4">
-          <Link to="/">MyBlog</Link>
-          {!currentUser && (
+    <header className="px-4 py-4">
+      <div className="max-w-5xl mx-auto bg-white border border-black rounded-md px-4 py-3 flex justify-between items-center">
+        <div>
+          <Link to="/" className="font-bold text-lg">
+            MyBlog
+          </Link>
+        </div>
+
+        <nav className="flex gap-4 items-center">
+          {!currentUser && <Link to="/login">Вхід</Link>}
+          {currentUser && (
             <>
-              <Link to="/login">Вхід</Link>
-              <Link to="/register">Реєстрація</Link>
+              <Link to="/create">Створити</Link>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+                className="p-2"
+              >
+                Вийти
+              </button>
             </>
           )}
-          {currentUser && <Link to="/create">Створити</Link>}
         </nav>
-
-        {currentUser && logout && (
-          <button
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-            className="p-2"
-          >
-            Вийти
-          </button>
-        )}
       </div>
     </header>
   );

@@ -99,7 +99,7 @@ const CommentSection = ({ postId }) => {
     currentUser && (comment.authorId === currentUser.uid || isAdmin);
 
   return (
-    <div className="mt-10 max-w-2xl mx-auto p-6">
+    <div className="mt-10 max-w-2xl mx-auto p-6 sm:p-8 lg:p-10">
       {comments.length === 0 && (
         <p className="mt-4 text-gray-500">Ще немає коментарів.</p>
       )}
@@ -143,13 +143,13 @@ const CommentSection = ({ postId }) => {
                   <div className="flex gap-4 mt-2 text-sm">
                     <button
                       onClick={() => handleEdit(comment.id, comment.text)}
-                      className="text-blue-600 hover:underline"
+                      className="h-8 px-5 b border border-black rounded-md hover:bg-black hover:text-white transition"
                     >
                       Редагувати
                     </button>
                     <button
                       onClick={() => handleDelete(comment.id)}
-                      className="text-red-600 hover:underline"
+                      className="h-8 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"
                     >
                       Видалити
                     </button>

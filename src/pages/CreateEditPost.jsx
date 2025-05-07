@@ -106,17 +106,15 @@ const CreateEditPost = () => {
 
   return (
     <form onSubmit={handleSubmit} className="container p-8 space-y-6">
-      <h2 className="text-2xl font-semibold mb-6 text-center">
-        {id ? "Редагування" : "Нова замітка"}
+      <h2 className="text-2xl font-semibold mb-6">
+        {id ? "Редагування" : "Створити замітку"}
       </h2>
 
       <div>
-        <label className="block text-lg font-medium text-gray-700">
-          Заголовок
-        </label>
         <input
           type="text"
-          className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-lg bg-white focus:bg-gray-200 focus:outline-none"
+          placeholder="Заголовок"
+          className="w-full p-3 mt-2 border border-black rounded-md text-lg bg-white focus:bg-gray-200 focus:outline-none"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -126,9 +124,9 @@ const CreateEditPost = () => {
       </div>
 
       <div>
-        <label className="block text-lg font-medium text-gray-700">Текст</label>
         <textarea
-          className="w-full p-3 mt-2 border border-gray-300 rounded-lg text-lg bg-white focus:bg-gray-200 focus:outline-none"
+          className="w-full p-3 mt-2 border border-black rounded-md text-lg bg-white focus:bg-gray-200 focus:outline-none"
+          placeholder="Текст"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -136,13 +134,14 @@ const CreateEditPost = () => {
           <p className="text-red-600 text-sm mt-1">{errors.content}</p>
         )}
       </div>
-
-      <button
-        type="submit"
-        className="w-full py-3 bg-blue-600 text-white rounded-lg"
-      >
-        {id ? "Зберегти зміни" : "Опублікувати"}
-      </button>
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          className="h-12 px-5 border border-black rounded-md hover:bg-black hover:text-white transitionh-12 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"
+        >
+          {id ? "Зберегти зміни" : "Зберегти"}
+        </button>
+      </div>
     </form>
   );
 };

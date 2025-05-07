@@ -36,7 +36,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="p-8 rounded-lg border border-black w-full max-w-md">
       <h2 className="text-2xl font-semibold mb-6">Реєстрація</h2>
       {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
 

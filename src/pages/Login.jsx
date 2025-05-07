@@ -30,7 +30,7 @@ const Login = () => {
   };
 
   return (
-    <div className="p-8 rounded-lg shadow-md w-full max-w-md">
+    <div className="p-8 rounded-lg border border-black w-full max-w-md">
       <h2 className="text-2xl font-semibold mb-6">Вхід</h2>
       {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -66,6 +66,11 @@ const Login = () => {
         >
           Увійти
         </button>
+        <div className="mt-4">
+          <a href="/register" className="underline">
+            Зареєструватися
+          </a>
+        </div>
       </form>
     </div>
   );
