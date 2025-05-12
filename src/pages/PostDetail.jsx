@@ -57,24 +57,37 @@ const PostDetail = () => {
   return (
     <div className="max-w-full mx-auto py-4 sm:py-6">
       <div className="max-w-full sm:max-w-lg md:max-w-screen-md mx-auto px-2 sm:px-4 py-4 sm:py-6 rounded-lg border border-black bg-white">
+        {/* Автор і дата */}
+        <div className="flex items-center gap-3 mb-4">
+          <img
+            src={post.authorImageUrl || "/default-avatar.png"}
+            alt="автор"
+            className="w-12 h-12 rounded-full object-cover"
+          />
+          <div>
+            <p className="text-base font-semibold text-gray-800">
+              {post.authorNickname || "Анонім"}
+            </p>
+            <p className="text-sm text-gray-500">
+              {post.createdAt?.toDate?.()
+                ? post.createdAt.toDate().toLocaleDateString()
+                : "невідомо"}
+            </p>
+          </div>
+        </div>
+
+        {/* Заголовок і контент */}
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">{post.title}</h1>
         <p className="text-gray-700 whitespace-pre-line text-sm sm:text-base">
           {post.content}
         </p>
-        <p className="mt-4 text-sm text-gray-500">
-          Автор: {post.author || "невідомо"}
-        </p>
-        <p className="mt-1 text-sm text-gray-500">
-          Дата:{" "}
-          {post.createdAt?.toDate?.()
-            ? post.createdAt.toDate().toLocaleDateString()
-            : "невідомо"}
-        </p>
 
-        <p className="mt-2 text-sm text-gray-500">
+        {/* Метадані */}
+        <p className="mt-4 text-sm text-gray-500">
           Коментарів: {post.commentsCount || 0}
         </p>
 
+        {/* Кнопки для автора чи адміна */}
         {(isAuthor || isAdmin) && (
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
@@ -92,6 +105,7 @@ const PostDetail = () => {
           </div>
         )}
 
+        {/* Коментарі */}
         <CommentSection postId={post.id} />
       </div>
     </div>

@@ -68,6 +68,7 @@ const CreateEditPost = () => {
 
     return newErrors;
   };
+  console.log("userData:", userData);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,12 +87,20 @@ const CreateEditPost = () => {
 
     try {
       if (id) {
-        await updateDoc(doc(db, "posts", id), postData);
+        await updateDoc(doc(db, "posts", id), {
+          ...postData,
+          authorNickname:
+            userData?.nickname || currentUser.displayName || "Анонім",
+          authorImageUrl: userData?.profileImageUrl || "",
+        });
       } else {
         await addDoc(collection(db, "posts"), {
           ...postData,
           createdAt: serverTimestamp(),
           userId: currentUser.uid,
+          authorNickname:
+            userData?.nickname || currentUser.displayName || "Анонім",
+          authorImageUrl: userData?.profileImageUrl || "",
         });
       }
       navigate("/");
