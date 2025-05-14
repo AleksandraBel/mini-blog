@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from "../firebase";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, updateDoc } from "firebase/firestore"; // Змінено setDoc на updateDoc
+import { db, storage } from "../firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ProfilePage = () => {
   const auth = getAuth();
@@ -15,17 +15,57 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) return;
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setNickname(data.nickname || "");
-        setPreview(data.profileImageUrl || "");
+      try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setNickname(data.nickname || "");
+          setPreview(data.profileImageUrl || "");
+        }
+      } catch (err) {
+        console.error("Помилка завантаження даних:", err);
       }
     };
 
     fetchUserData();
   }, [user]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      alert("Користувач не авторизований!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      let profileImageUrl = preview;
+
+      // Завантаження зображення, якщо вибрано файл
+      if (imageFile) {
+        const fileRef = ref(storage, `profileImages/${user.uid}`);
+        await uploadBytes(fileRef, imageFile);
+        profileImageUrl = await getDownloadURL(fileRef);
+      }
+
+      // Оновлюємо лише nickname і profileImageUrl у Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, {
+        nickname,
+        profileImageUrl,
+      });
+
+      setPreview(profileImageUrl);
+      alert("Профіль оновлено!");
+    } catch (err) {
+      console.error("Помилка збереження:", err);
+      alert("Не вдалося оновити профіль. Перевірте консоль для деталей.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -34,41 +74,6 @@ const ProfilePage = () => {
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      let profileImageUrl = preview;
-
-      // Якщо є нове зображення, завантажуємо його в Storage
-      if (imageFile) {
-        const storage = getStorage();
-        const fileRef = ref(storage, `profileImages/${user.uid}`);
-        await uploadBytes(fileRef, imageFile);
-        profileImageUrl = await getDownloadURL(fileRef);
-      }
-
-      // Отримуємо поточну дату
-      const createdAt = new Date();
-
-      // Зберігаємо в Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        nickname,
-        profileImageUrl,
-        role: "user", // можна змінити на необхідну роль (наприклад, "admin" для адміна)
-        createdAt: createdAt,
-      });
-
-      setPreview(profileImageUrl);
-      alert("Профіль оновлено!");
-    } catch (err) {
-      console.error("Помилка збереження:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -83,7 +88,7 @@ const ProfilePage = () => {
           onChange={(e) => setNickname(e.target.value)}
           className="w-full p-2 border rounded"
         />
-        <input type="file" onChange={handleFileChange} />
+        <input type="file" accept="image/*" onChange={handleFileChange} />
         {preview && (
           <img
             src={preview}
@@ -94,7 +99,7 @@ const ProfilePage = () => {
         <button
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={loading}
+          disabled={loading || !user}
         >
           {loading ? "Збереження..." : "Зберегти"}
         </button>

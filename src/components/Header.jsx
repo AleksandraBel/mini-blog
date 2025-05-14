@@ -15,6 +15,7 @@ const Header = () => {
             MyBlog
           </Link>
         </div>
+        <Link to="/profile">Мій профіль</Link>
 
         <nav className="flex gap-4 items-center">
           {!currentUser && <Link to="/login">Вхід</Link>}

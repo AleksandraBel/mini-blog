@@ -59,12 +59,23 @@ const PostDetail = () => {
       <div className="max-w-full sm:max-w-lg md:max-w-screen-md mx-auto px-2 sm:px-4 py-4 sm:py-6 rounded-lg border border-black bg-white">
         {/* Автор і дата */}
         <div className="flex items-center gap-3 mb-4">
-          <img
+          {/* <img
             src={post.authorImageUrl || "/default-avatar.png"}
             alt="автор"
             className="w-12 h-12 rounded-full object-cover"
+          /> */}
+          {/* <img
+            src={userData.profileImageUrl}
+            className="w-8 h-8 rounded-full"
+          /> */}
+          <img
+            src={post.authorImageUrl || "/default-avatar.png"}
+            alt="автор"
+            className="w-8 h-8 rounded-full object-cover"
           />
-          <div>
+          <p>{post.authorNickname}</p>
+
+          {/* <div>
             <p className="text-base font-semibold text-gray-800">
               {post.authorNickname || "Анонім"}
             </p>
@@ -73,7 +84,7 @@ const PostDetail = () => {
                 ? post.createdAt.toDate().toLocaleDateString()
                 : "невідомо"}
             </p>
-          </div>
+          </div> */}
         </div>
 
         {/* Заголовок і контент */}
