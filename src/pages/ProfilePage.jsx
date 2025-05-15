@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { doc, getDoc, updateDoc } from "firebase/firestore"; // Змінено setDoc на updateDoc
-import { db, storage } from "../firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { uploadImageToCloudinary } from "../services/uploadImage";
 
 const ProfilePage = () => {
   const auth = getAuth();
@@ -43,14 +43,11 @@ const ProfilePage = () => {
     try {
       let profileImageUrl = preview;
 
-      // Завантаження зображення, якщо вибрано файл
       if (imageFile) {
-        const fileRef = ref(storage, `profileImages/${user.uid}`);
-        await uploadBytes(fileRef, imageFile);
-        profileImageUrl = await getDownloadURL(fileRef);
+        // Завантажуємо зображення в Cloudinary
+        profileImageUrl = await uploadImageToCloudinary(imageFile);
       }
 
-      // Оновлюємо лише nickname і profileImageUrl у Firestore
       const userDocRef = doc(db, "users", user.uid);
       await updateDoc(userDocRef, {
         nickname,
@@ -61,7 +58,7 @@ const ProfilePage = () => {
       alert("Профіль оновлено!");
     } catch (err) {
       console.error("Помилка збереження:", err);
-      alert("Не вдалося оновити профіль. Перевірте консоль для деталей.");
+      alert("Не вдалося оновити профіль. Перевірте консоль.");
     } finally {
       setLoading(false);
     }
