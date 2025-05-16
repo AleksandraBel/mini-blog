@@ -72,7 +72,7 @@ const PostDetail = () => {
   const isAdmin = userData?.role === "admin";
 
   const handleDelete = async () => {
-    const confirm = window.confirm("Ти впевнена, що хочеш видалити пост?");
+    const confirm = window.confirm("Ти впевнений, що хочеш видалити пост?");
     if (!confirm) return;
 
     try {
