@@ -8,12 +8,12 @@ import {
   deleteDoc,
   updateDoc,
   doc,
-  getDoc,
   serverTimestamp,
   increment,
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
+import UserBadge from "./UserBadge";
 
 const CommentSection = ({ postId }) => {
   const { currentUser, userData } = useAuth();
@@ -29,35 +29,11 @@ const CommentSection = ({ postId }) => {
       orderBy("createdAt", "desc")
     );
 
-    const unsubscribe = onSnapshot(q, async (snapshot) => {
-      const fetched = await Promise.all(
-        snapshot.docs.map(async (docSnap) => {
-          const comment = { id: docSnap.id, ...docSnap.data() };
-
-          let nickname = "Анонім";
-          let profileImageUrl = "/default-avatar.png";
-
-          if (comment.authorId) {
-            try {
-              const userDoc = await getDoc(doc(db, "users", comment.authorId));
-              if (userDoc.exists()) {
-                const userData = userDoc.data();
-                nickname = userData.nickname || nickname;
-                profileImageUrl = userData.profileImageUrl || profileImageUrl;
-              }
-            } catch (err) {
-              console.error("Помилка при завантаженні автора:", err);
-            }
-          }
-
-          return {
-            ...comment,
-            authorNickname: nickname,
-            authorPhotoURL: profileImageUrl,
-          };
-        })
-      );
-
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetched = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
       setComments(fetched);
     });
 
@@ -94,7 +70,6 @@ const CommentSection = ({ postId }) => {
   const handleDelete = async (commentId) => {
     try {
       await deleteDoc(doc(db, "posts", postId, "comments", commentId));
-
       await updateDoc(doc(db, "posts", postId), {
         commentsCount: increment(-1),
       });
@@ -158,26 +133,22 @@ const CommentSection = ({ postId }) => {
             ) : (
               <>
                 <p className="text-gray-800 text-base">{comment.text}</p>
-                <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
-                  <img
-                    src={comment.authorPhotoURL}
-                    alt="аватар"
-                    className="w-5 h-5 rounded-full object-cover"
-                  />
-                  <span>{comment.authorNickname}</span>
-                  <span className="text-xs text-gray-400">
-                    •{" "}
-                    {comment.createdAt?.toDate?.()
+
+                <UserBadge
+                  authorId={comment.authorId}
+                  email={comment.authorName}
+                  date={
+                    comment.createdAt?.toDate?.()
                       ? comment.createdAt.toDate().toLocaleString()
-                      : "невідомо"}
-                  </span>
-                </p>
+                      : null
+                  }
+                />
 
                 {canManageComment(comment) && (
                   <div className="flex gap-4 mt-2 text-sm">
                     <button
                       onClick={() => handleEdit(comment.id, comment.text)}
-                      className="h-8 px-5 b border border-black rounded-md hover:bg-black hover:text-white transition"
+                      className="h-8 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"
                     >
                       Редагувати
                     </button>
@@ -206,7 +177,7 @@ const CommentSection = ({ postId }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`h-12 px-5 border border-black rounded-md px-5 py-2 hover:bg-black hover:text-white transition ${
+            className={`h-12 px-5 border border-black rounded-md hover:bg-black hover:text-white transition ${
               isSubmitting ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >

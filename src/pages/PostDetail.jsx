@@ -1,17 +1,14 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { doc, onSnapshot, deleteDoc, getDoc } from "firebase/firestore";
+import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 import CommentSection from "../components/CommentSection";
+import UserBadge from "../components/UserBadge";
 
 const PostDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
-  const [authorData, setAuthorData] = useState({
-    nickname: "",
-    profileImageUrl: "",
-  });
   const [loading, setLoading] = useState(true);
   const { currentUser, userData } = useAuth();
   const navigate = useNavigate();
@@ -20,36 +17,10 @@ const PostDetail = () => {
     const docRef = doc(db, "posts", id);
     const unsubscribe = onSnapshot(
       docRef,
-      async (docSnap) => {
+      (docSnap) => {
         if (docSnap.exists()) {
           const postData = { id: docSnap.id, ...docSnap.data() };
           setPost(postData);
-
-          // Підвантажуємо дані автора по userId з колекції users
-          if (postData.userId) {
-            try {
-              const userDoc = await getDoc(doc(db, "users", postData.userId));
-              if (userDoc.exists()) {
-                const userData = userDoc.data();
-                setAuthorData({
-                  nickname: userData.nickname || "Анонім",
-                  profileImageUrl:
-                    userData.profileImageUrl || "/default-avatar.png",
-                });
-              } else {
-                setAuthorData({
-                  nickname: "Анонім",
-                  profileImageUrl: "/default-avatar.png",
-                });
-              }
-            } catch (error) {
-              console.error("Помилка підвантаження автора:", error);
-              setAuthorData({
-                nickname: "Анонім",
-                profileImageUrl: "/default-avatar.png",
-              });
-            }
-          }
         } else {
           console.log("Пост не знайдено");
           setPost(null);
@@ -89,14 +60,15 @@ const PostDetail = () => {
     <div className="max-w-full mx-auto py-4 sm:py-6">
       <div className="max-w-full sm:max-w-lg md:max-w-screen-md mx-auto px-2 sm:px-4 py-4 sm:py-6 rounded-lg border border-black bg-white">
         {/* Автор і дата */}
-        <div className="flex items-center gap-3 mb-4">
-          <img
-            src={authorData.profileImageUrl}
-            alt="автор"
-            className="w-8 h-8 rounded-full object-cover"
-          />
-          <p>{authorData.nickname}</p>
-        </div>
+        <UserBadge
+          authorId={post.userId}
+          email={post.authorName || "Невідомий автор"}
+          date={
+            post.createAt?.toDate?.()
+              ? post.createAt.toDate().toLocaleString()
+              : null
+          }
+        />
 
         {/* Заголовок і контент */}
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">{post.title}</h1>
@@ -126,10 +98,9 @@ const PostDetail = () => {
             </button>
           </div>
         )}
-
-        {/* Коментарі */}
-        <CommentSection postId={post.id} />
       </div>
+
+      <CommentSection postId={post.id} />
     </div>
   );
 };
