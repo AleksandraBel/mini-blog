@@ -69,6 +69,14 @@ const PostDetail = () => {
               : null
           }
         />
+        {/* Зображення статті */}
+        {post.imageUrl && (
+          <img
+            src={post.imageUrl}
+            alt="Зображення статті"
+            className="mt-4 rounded max-w-full max-h-[400px] object-cover mb-4"
+          />
+        )}
 
         {/* Заголовок і контент */}
         <h1 className="text-2xl sm:text-3xl font-bold mb-4">{post.title}</h1>

@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "../context/useAuth";
+import { uploadImageToCloudinary } from "../services/uploadImage";
 
 const CreateEditPost = () => {
   const { id } = useParams();
@@ -19,7 +20,8 @@ const CreateEditPost = () => {
   const [loading, setLoading] = useState(!!id);
   const [ownerId, setOwnerId] = useState(null);
   const [accessDenied, setAccessDenied] = useState(false);
-
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const navigate = useNavigate();
   const { currentUser, userData } = useAuth();
 
@@ -78,14 +80,20 @@ const CreateEditPost = () => {
       return;
     }
 
-    const postData = {
-      title,
-      content,
-      author: currentUser.displayName || currentUser.email,
-      updatedAt: serverTimestamp(),
-    };
-
     try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImageToCloudinary(imageFile);
+      }
+
+      const postData = {
+        title,
+        content,
+        imageUrl,
+        author: currentUser.displayName || currentUser.email,
+        updatedAt: serverTimestamp(),
+      };
+
       if (id) {
         await updateDoc(doc(db, "posts", id), {
           ...postData,
@@ -103,9 +111,18 @@ const CreateEditPost = () => {
           authorImageUrl: userData?.profileImageUrl || "",
         });
       }
+
       navigate("/");
     } catch (error) {
       console.error("Помилка збереження:", error);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -120,6 +137,16 @@ const CreateEditPost = () => {
       </h2>
 
       <div>
+        {imagePreview && (
+          <div className="mt-2">
+            <img
+              src={imagePreview}
+              alt="Прев'ю"
+              style={{ maxWidth: "300px" }}
+            />
+          </div>
+        )}
+        <input type="file" accept="image/*" onChange={handleImageChange} />
         <input
           type="text"
           placeholder="Заголовок"
