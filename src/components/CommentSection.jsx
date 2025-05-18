@@ -14,6 +14,7 @@ import {
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 import UserBadge from "./UserBadge";
+import LikeButton from "./LikeButton";
 
 const CommentSection = ({ postId }) => {
   const { currentUser, userData } = useAuth();
@@ -146,6 +147,13 @@ const CommentSection = ({ postId }) => {
 
                 {canManageComment(comment) && (
                   <div className="flex gap-4 mt-2 text-sm">
+                    {/* Лайк */}
+                    <LikeButton
+                      postId={postId}
+                      commentId={comment.id}
+                      likes={comment.likes || []}
+                    />
+
                     <button
                       onClick={() => handleEdit(comment.id, comment.text)}
                       className="h-8 px-5 border border-black rounded-md hover:bg-black hover:text-white transition"

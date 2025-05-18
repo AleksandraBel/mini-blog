@@ -1,17 +1,11 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  doc,
-  onSnapshot,
-  deleteDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
-} from "firebase/firestore";
+import { doc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useAuth } from "../context/useAuth";
 import CommentSection from "../components/CommentSection";
 import UserBadge from "../components/UserBadge";
+import LikeButton from "../components/LikeButton";
 
 const PostDetail = () => {
   const { id } = useParams();
@@ -63,26 +57,6 @@ const PostDetail = () => {
     }
   };
 
-  const handleToggleLike = async () => {
-    if (!currentUser) {
-      alert("Увійди, щоб ставити лайк.");
-      return;
-    }
-
-    const postRef = doc(db, "posts", post.id);
-    const isLiked = post.likes?.includes(currentUser.uid);
-
-    try {
-      await updateDoc(postRef, {
-        likes: isLiked
-          ? arrayRemove(currentUser.uid)
-          : arrayUnion(currentUser.uid),
-      });
-    } catch (error) {
-      console.error("Помилка при зміні лайка:", error);
-    }
-  };
-
   return (
     <div className="max-w-full mx-auto py-4 sm:py-6">
       <div className="max-w-full sm:max-w-lg md:max-w-screen-md mx-auto px-2 sm:px-4 py-4 sm:py-6 rounded-lg border border-black bg-white">
@@ -112,15 +86,7 @@ const PostDetail = () => {
         </p>
 
         {/* Лайк */}
-        <div className="mt-4">
-          <button
-            onClick={handleToggleLike}
-            className="text-xl sm:text-2xl hover:scale-110 transition"
-          >
-            {post.likes?.includes(currentUser?.uid) ? "❤️" : "🤍"}{" "}
-            {post.likes?.length || 0}
-          </button>
-        </div>
+        <LikeButton postId={post.id} likes={post.likes || []} />
 
         {/* Метадані */}
         <p className="mt-4 text-sm text-gray-500">

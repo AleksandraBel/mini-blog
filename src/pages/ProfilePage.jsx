@@ -95,7 +95,7 @@ const ProfilePage = () => {
         )}
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="inline-block px-4 py-1 border border-black rounded-md hover:bg-black hover:text-white transition text-sm sm:text-base"
           disabled={loading || !user}
         >
           {loading ? "Збереження..." : "Зберегти"}
